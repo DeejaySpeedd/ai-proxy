@@ -1,10 +1,11 @@
 export default async function handler(req, res) {
+  // Povolit CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status(200).end(); // Odpověď na preflight
   }
 
   if (req.method !== 'POST') {
