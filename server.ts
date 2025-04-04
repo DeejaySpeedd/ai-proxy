@@ -1,10 +1,22 @@
-import {serve} from '@hono/node-server'
-import app from './main'
+import { createServer } from 'node:http'
+import { createProxy } from 'ai-proxy'
 
-const port=  Number(process.env.PORT || '4000')
-serve({
-    fetch: app.fetch,
-    port
+const proxy = createProxy({
+  provider: {
+    id: 'openai',
+    baseURL: 'https://api.openai.com/v1',
+    headers: {
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  },
+  proxy: {
+    '/v1/:path*': {
+      target: 'openai'
+    }
+  }
 })
 
-console.log(`http://localhost:${port}`)
+createServer(async (req, res) => {
+  await proxy.handleNodeRequest(req, res)
+}).listen(process.env.PORT || 3000)
